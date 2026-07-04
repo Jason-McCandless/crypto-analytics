@@ -1,12 +1,11 @@
 import pandas as pd
 from config import REQUIRED_COLUMNS
-from extract import fetch_data
 
-# def transform_data(data):
-#     df = pd.read_json(data)
-#     print(df.to_string())
-def transform_data(data):
+def transform_market_data(data):
     df = pd.DataFrame(data)
+    if df.empty:
+        print("DataFrame is empty. No data to process.")
+        return None
     # check df.columns to ensure it contains all REQUIRED_COLUMNS
     missing_columns = [col for col in REQUIRED_COLUMNS if col not in df.columns]
     if missing_columns:
@@ -17,16 +16,13 @@ def transform_data(data):
         raise ValueError("Duplicate entries found in the data.")
     else: 
         print ("No duplicate entries found.")
-    if df.empty:
-        print("DataFrame is empty. No data to process.")
-        return None
-    else:
-        clean_df = df.loc[:, REQUIRED_COLUMNS]
-        # convert last_updated to datetime
-        clean_df["last_updated"] = pd.to_datetime(clean_df["last_updated"], errors='coerce')
-        # add ingestion timestamp
-        clean_df["ingestion_timestamp"] = pd.Timestamp.now()
-
-        print(clean_df.info())
-        print(clean_df.dtypes)
-        return clean_df
+    clean_df = df.loc[:, REQUIRED_COLUMNS].copy()
+    # convert last_updated to datetime
+    clean_df["last_updated"] = pd.to_datetime(clean_df["last_updated"], errors='coerce')
+    # check any NaT values in last_updated
+    if clean_df["last_updated"].isna().any():
+        print("Warning: Some 'last_updated' values could not be converted to datetime and are set as NaT.")
+        raise ValueError("Invalid 'last_updated' values found in the data.")
+    # add ingestion timestamp
+    clean_df["ingestion_timestamp"] = pd.Timestamp.now(tz='UTC')
+    return clean_df

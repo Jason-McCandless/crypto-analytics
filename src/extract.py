@@ -17,7 +17,7 @@ PARAMS = {
     "vs_currency": CURRENCY
 }
 
-def fetch_data():
+def fetch_market_data():
     try:    
         print("Fetching currencies...")
         # Validate that all REQUIRED_COLUMNS exist before trying to select them, 
@@ -27,19 +27,13 @@ def fetch_data():
         data = r.json()
         print("Request successful with status code: ", r.status_code, " saving data")
         print(f"Retrieved {len(data)} cryptocurrencies.")
+        return data
     except requests.RequestException as e:
         print(f"Error fetching data: {e}")
+        raise
 
-    return data
 
 def save_raw_data(data):
     with open("data/raw/data.json", "w") as f:
         json.dump(data, f, indent=4)
 
-def main():
-    data = fetch_data()
-    if data:
-        save_raw_data(data)
-
-if __name__ == "__main__":
-    main()
