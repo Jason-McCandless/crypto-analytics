@@ -1,12 +1,11 @@
 import requests, json
-
 import os                                                                                                                                                                                                          
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+from config import IDS, CURRENCY, REQUIRED_COLUMNS
 load_dotenv(Path(".env"))
 
-IDS = "bitcoin,ethereum,solana,cardano"
-CURRENCY = "gbp"
+
 BASE_URL = "https://api.coingecko.com/api/v3/coins/markets"
 API_KEY = os.getenv("COINGECKO_API_KEY")
 HEADERS = {
@@ -21,6 +20,8 @@ PARAMS = {
 def fetch_data():
     try:    
         print("Fetching currencies...")
+        # Validate that all REQUIRED_COLUMNS exist before trying to select them, 
+        # and fail with a clear error if any are missing.
         r = requests.get(BASE_URL, headers=HEADERS, params=PARAMS, timeout=10)
         r.raise_for_status()  # Raise an exception for HTTP errors
         data = r.json()

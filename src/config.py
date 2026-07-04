@@ -9,3 +9,5 @@ REQUIRED_COLUMNS = ['id',
                     'circulating_supply', 
                     'last_updated'
                 ]
+IDS = "bitcoin,ethereum,solana,cardano"
+CURRENCY = "gbp"
