@@ -17,6 +17,13 @@ def transform_market_data(data):
     else: 
         print ("No duplicate entries found.")
     clean_df = df.loc[:, REQUIRED_COLUMNS].copy()
+    clean_df.rename(
+    columns={
+        "id": "coin_id",
+        "current_price": "current_price_gbp",
+    },
+    inplace=True
+    )
     # convert last_updated to datetime
     clean_df["last_updated"] = pd.to_datetime(clean_df["last_updated"], errors='coerce')
     # check any NaT values in last_updated
